@@ -4,17 +4,35 @@ allowBuilds:
   lefthook: true
   sharp: true
   workerd: true
+# These patched releases are newer than pnpm's configured release-age window.
+# Keep the exception scoped to the exact audited versions so frozen installs work.
+minimumReleaseAgeExclude:
+  - "@cloudflare/workerd-darwin-64@1.20261019.1"
+  - "@cloudflare/workerd-darwin-arm64@1.20261019.1"
+  - "@cloudflare/workerd-linux-64@1.20261019.1"
+  - "@cloudflare/workerd-linux-arm64@1.20261019.1"
+  - "@cloudflare/workerd-windows-64@1.20261019.1"
+  - miniflare@5.20261019.0-beta
+  - postcss@8.5.31
+  - workerd@1.20261019.1
+  - wrangler@4.151.2
+  - "@cloudflare/workers-types@5.20261019.1"
+  - "@cloudflare/vitest-plugin@1.4.5"
 # Single-package repo. This file only carries pnpm build-approval settings
 # and dependency overrides; it does not declare any workspace packages.
 onlyBuiltDependencies:
   - esbuild
   - sharp
   - workerd
-# Pin transitive deps pinned by our own devDependencies at vulnerable
-# versions (@cloudflare/vitest-pool-workers -> wrangler -> miniflare -> ws;
-# drizzle-kit -> deprecated @esbuild-kit/esm-loader -> esbuild) to patched
-# releases. See Dependabot alerts on the ws/wrangler/esbuild advisories.
+# Keep development-tool transitives above the patched advisory versions.
+# Cloudflare's test plugin and Wrangler pin Miniflare, which pins sharp and
+# undici; Vitest/Vite pull in PostCSS and source-map-js.
 overrides:
-  wrangler: ^4.106.0
+  wrangler: ^4.151.2
   ws: ^8.21.0
-  esbuild: ^0.25.4
+  esbuild: ^0.28.2
+  sharp: ^0.35.5
+  undici: ^7.30.1
+  postcss: ^8.5.31
+  source-map-js: ^1.2.2
+  tinypool: 2.1.2

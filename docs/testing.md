@@ -3,16 +3,18 @@
 ## How Vaultur is tested
 
 Integration tests run the **real Worker** inside `workerd` via
-`@cloudflare/vitest-pool-workers`, with live D1, KV, R2 and Durable Object
+`@cloudflare/vitest-plugin`, with live D1, KV, R2 and Durable Object
 bindings — so every test exercises the actual request path, database, and
 storage, not mocks.
 
 ```bash
-pnpm test                       # all suites
+pnpm test                       # main integration suite
+pnpm test:heavy                 # Durable Object offload suite
+pnpm test:freetier              # KV storage fallback, without R2
 pnpm vitest run test/vault.spec.ts   # one suite
 ```
 
-Current coverage — **67 tests across 12 suites**:
+The main integration suite currently runs **123 tests across 24 files**.
 
 | Suite              | What it covers                                                                                                                                                                                                         |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

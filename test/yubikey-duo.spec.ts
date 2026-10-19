@@ -1,9 +1,9 @@
 import { createHmac } from "node:crypto"
 
-import { fetchMock } from "cloudflare:test"
 import { sign } from "hono/jwt"
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest"
 
+import { fetchMock } from "./fetch-mock"
 import { api, login, registerAndLogin, TEST_USER } from "./helpers"
 
 /**

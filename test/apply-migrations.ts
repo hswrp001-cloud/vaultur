@@ -1,3 +1,8 @@
-import { applyD1Migrations, env } from "cloudflare:test"
+import { applyD1Migrations, reset } from "cloudflare:test"
+import { env } from "cloudflare:workers"
+import { beforeEach } from "vitest"
 
-await applyD1Migrations(env.VAULTUR_DB, env.TEST_MIGRATIONS)
+beforeEach(async () => {
+	await reset()
+	await applyD1Migrations(env.VAULTUR_DB, env.TEST_MIGRATIONS)
+})

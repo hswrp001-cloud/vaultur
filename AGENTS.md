@@ -8,8 +8,8 @@ vaultwarden route); config defaults mirror vaultwarden. This includes
 WebAuthn/Duo/YubiKey 2FA (`src/services/{webauthn,duo,yubikey}.ts` via
 `@simplewebauthn/server` and `node:crypto`) and OIDC SSO (`src/services/sso.ts`
 plus the `/identity/connect/*` routes, id_tokens verified with `jose`).
-External-service tests mock at the fetch layer with `fetchMock` from
-`cloudflare:test` — see `test/{sso,yubikey-duo}.spec.ts`. Feature and parity
+External-service tests mock at the fetch layer with `test/fetch-mock.ts` —
+see `test/{sso,yubikey-duo}.spec.ts`. Feature and parity
 notes live in `README.md`.
 
 ## Ground rules
@@ -96,13 +96,11 @@ never derives inline, and `src/app.ts` returns a 500 if the binding is missing.
 
 - `pnpm typecheck` — strict tsc
 - `pnpm test` / `pnpm vitest run test/<file>.spec.ts` — integration tests in
-  real workerd (D1/KV/R2/DO bindings via `@cloudflare/vitest-pool-workers`)
-- `pnpm test:heavy` — DO-specific tests (separate vitest config with
-  `VAULTUR_HEAVY` binding; not included in `pnpm test` due to storage
-  isolation limitations)
+  real workerd (D1/KV/R2/DO bindings via `@cloudflare/vitest-plugin`)
+- `pnpm test:heavy` — DO-specific tests in a separate Vitest config
 - `pnpm test:freetier` — attachments/sends specs run with no R2 binding, to
   exercise the `KvBlobStore` fallback path (`src/services/storage.ts`;
-  separate config for the same binding-isolation reason as `test:heavy`)
+  separate config because bindings are fixed per Miniflare instance)
 - `pnpm format` / `pnpm format:check` — oxfmt write / check
 - `pnpm dev` — wrangler dev (needs `.env`, see `.env.example`)
 - `pnpm deploy` — wrangler deploy

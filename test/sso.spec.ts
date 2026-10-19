@@ -1,9 +1,10 @@
 import { createHash } from "node:crypto"
 
-import { SELF, fetchMock } from "cloudflare:test"
+import { SELF } from "cloudflare:test"
 import { SignJWT, exportJWK, generateKeyPair } from "jose"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 
+import { fetchMock } from "./fetch-mock"
 import { login, registerAndLogin, registerUser, TEST_USER } from "./helpers"
 
 /**

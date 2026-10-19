@@ -277,7 +277,7 @@ served by the Worker as static assets — no custom client is maintained here.
 ## Testing
 
 Integration tests run the real Worker in workerd via
-`@cloudflare/vitest-pool-workers` — D1, KV, R2 and Durable Objects included,
+`@cloudflare/vitest-plugin` — D1, KV, R2 and Durable Objects included,
 not mocked:
 
 ```bash
