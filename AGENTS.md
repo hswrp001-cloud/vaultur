@@ -107,10 +107,10 @@ never derives inline, and `src/app.ts` returns a 500 if the binding is missing.
 - `pnpm dev` — wrangler dev (needs `.env`, see `.env.example`)
 - `pnpm deploy` — wrangler deploy
 
-Local git hooks (`lefthook`) enforce checks: pre-commit runs
-`format:check`+`typecheck`, pre-push runs `build`+`test`. Run
-`pnpm exec lefthook install` once per clone to activate the git hooks; they
-don't run on their own otherwise.
+Local git hooks (`lefthook`) run `format:check`+`typecheck` before commits.
+Run `pnpm exec lefthook install` once per clone to activate the hook; it
+doesn't run on its own otherwise. CI runs `format:check`, `typecheck`, `test`,
+`test:heavy`, and `build` on PRs and pushes to main.
 
 ## Schema changes
 

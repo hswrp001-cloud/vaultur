@@ -53,10 +53,9 @@ pnpm test
 pnpm build
 ```
 
-[lefthook](https://lefthook.dev) runs these for you automatically once
-installed (`pnpm exec lefthook install`): `format:check` + `typecheck` on
-commit, `build` + `test` on push. CI re-runs the same checks (plus
-`test:heavy`) on every PR regardless.
+[lefthook](https://lefthook.dev) runs `format:check` + `typecheck` before each
+commit once installed (`pnpm exec lefthook install`). CI runs those checks,
+`test`, `test:heavy`, and `build` on every PR.
 
 ## Reporting bugs / requesting features
 

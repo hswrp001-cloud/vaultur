@@ -523,8 +523,9 @@ Checks run locally via [lefthook](https://lefthook.dev) git hooks
 pnpm exec lefthook install
 ```
 
-- **pre-commit** — `pnpm format:check` + `pnpm typecheck` on staged files
-- **pre-push** — `pnpm build` (deploy dry-run) + `pnpm test`
+The pre-commit hook runs `pnpm format:check` and `pnpm typecheck`.
+CI runs `pnpm format:check`, `pnpm typecheck`, `pnpm test`,
+`pnpm test:heavy`, and `pnpm build` on PRs and pushes to main.
 
 ## Continuous deployment (optional)
 
