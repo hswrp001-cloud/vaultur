@@ -14,7 +14,7 @@ export async function findUserByUuid(db: Db, userUuid: string): Promise<User | u
 }
 
 /** Prelogin serves both the legacy mobile fields and the browser's KdfSettings model. */
-export function preloginResponse(user?: User) {
+export function preloginResponse(email: string, user?: User) {
 	const kdf = user?.clientKdfType ?? KdfType.Pbkdf2
 	const iterations = user?.clientKdfIter ?? KDF_DEFAULTS.pbkdf2Iterations
 	const memory = user?.clientKdfMemory ?? null
@@ -25,7 +25,7 @@ export function preloginResponse(user?: User) {
 		kdfMemory: memory,
 		kdfParallelism: parallelism,
 		kdfSettings: { kdfType: kdf, iterations, memory, parallelism },
-		salt: null
+		salt: user?.email ?? normalizeEmail(email)
 	}
 }
 

@@ -48,7 +48,7 @@ accountRoutes.post("/accounts/prelogin", async (c) => {
 	const body = (await c.req.json().catch(() => ({}))) as Record<string, unknown>
 	const email = String(ci(body, "email") ?? "")
 	const user = email ? await findUserByEmail(c.get("db"), email) : undefined
-	return c.json(preloginResponse(user))
+	return c.json(preloginResponse(email, user))
 })
 accountRoutes.post("/accounts/password-hint", async (c) => {
 	const config = c.get("config")

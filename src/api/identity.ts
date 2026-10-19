@@ -709,7 +709,7 @@ async function prelogin(c: Context<AppEnv>) {
 	const db = c.get("db")
 	const user = email ? await findUserByEmail(db, email) : undefined
 
-	return c.json(preloginResponse(user))
+	return c.json(preloginResponse(email, user))
 }
 identityRoutes.post("/accounts/prelogin", prelogin)
 identityRoutes.post("/accounts/prelogin/password", prelogin)

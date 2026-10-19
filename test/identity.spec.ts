@@ -26,7 +26,7 @@ describe("identity", () => {
 			kdfMemory: null,
 			kdfParallelism: null,
 			kdfSettings: { kdfType: 0, iterations: 600_000, memory: null, parallelism: null },
-			salt: null
+			salt: "nobody@vaultur.dev"
 		})
 	})
 
@@ -61,7 +61,7 @@ describe("identity", () => {
 				kdfMemory: 64,
 				kdfParallelism: 4,
 				kdfSettings: { kdfType: 1, iterations: 3, memory: 64, parallelism: 4 },
-				salt: null
+				salt: TEST_USER.email
 			})
 		}
 
