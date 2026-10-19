@@ -639,11 +639,33 @@ export async function profileJson(db: Db, user: User, emailEnabled: boolean): Pr
 		)
 	})
 	const orgsJson = await Promise.all(memberships.map((m) => membershipToJson(db, m, emailEnabled)))
+	const membershipsNew = await db.query.usersOrganizations.findMany({
+		where: and(
+			eq(usersOrganizations.userUuid, user.uuid),
+			inArray(usersOrganizations.status, [MembershipStatus.Accepted, MembershipStatus.Confirmed])
+		)
+	})
+	const orgsNewJson = await Promise.all(
+		membershipsNew.map((m) => membershipToJson(db, m, emailEnabled))
+	)
 
 	const tf = await db.query.twofactor.findFirst({ where: eq(twofactor.userUuid, user.uuid) })
 
 	return {
 		_status: user.passwordHash === "" ? 1 : 0,
+		accountKeys: user.privateKey
+			? {
+					publicKeyEncryptionKeyPair: {
+						wrappedPrivateKey: user.privateKey,
+						publicKey: user.publicKey,
+						signedPublicKey: null,
+						object: "publicKeyEncryptionKeyPair"
+					},
+					securityState: null,
+					signatureKeyPair: null,
+					object: "privateKeys"
+				}
+			: null,
 		id: user.uuid,
 		name: user.name,
 		email: user.email,
@@ -656,6 +678,7 @@ export async function profileJson(db: Db, user: User, emailEnabled: boolean): Pr
 		privateKey: user.privateKey,
 		securityStamp: user.securityStamp,
 		organizations: orgsJson,
+		organizationsNew: orgsNewJson,
 		providers: [],
 		providerOrganizations: [],
 		forcePasswordReset: false,
@@ -711,7 +734,11 @@ export async function findCollectionsForUser(
 	})
 }
 
-export async function findPoliciesForUser(db: Db, userUuid: string): Promise<OrgPolicy[]> {
+export async function findPoliciesForUser(
+	db: Db,
+	userUuid: string,
+	includeAccepted = false
+): Promise<OrgPolicy[]> {
 	const rows = await db
 		.select({ policy: orgPolicies })
 		.from(orgPolicies)
@@ -719,7 +746,12 @@ export async function findPoliciesForUser(db: Db, userUuid: string): Promise<Org
 		.where(
 			and(
 				eq(usersOrganizations.userUuid, userUuid),
-				eq(usersOrganizations.status, MembershipStatus.Confirmed)
+				includeAccepted
+					? inArray(usersOrganizations.status, [
+							MembershipStatus.Accepted,
+							MembershipStatus.Confirmed
+						])
+					: eq(usersOrganizations.status, MembershipStatus.Confirmed)
 			)
 		)
 	return rows.map((r) => r.policy)

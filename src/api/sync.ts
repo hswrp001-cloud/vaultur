@@ -52,6 +52,7 @@ syncRoutes.get("/sync", async (c) => {
 	const foldersJson = (await findFoldersByUser(db, user.uuid)).map(folderToJson)
 	const sendsJson = (await findSendsByUser(db, user.uuid)).map(sendToJson)
 	const policiesJson = (await findPoliciesForUser(db, user.uuid)).map(policyToJson)
+	const policiesNewJson = (await findPoliciesForUser(db, user.uuid, true)).map(policyToJson)
 
 	const domainsJson = excludeDomains ? null : eqDomainsJson(user, true)
 
@@ -75,6 +76,7 @@ syncRoutes.get("/sync", async (c) => {
 		folders: foldersJson,
 		collections: collectionsJson,
 		policies: policiesJson,
+		policiesNew: policiesNewJson,
 		ciphers: ciphersJson,
 		domains: domainsJson,
 		sends: sendsJson,

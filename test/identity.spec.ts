@@ -24,7 +24,65 @@ describe("identity", () => {
 			kdf: 0,
 			kdfIterations: 600_000,
 			kdfMemory: null,
-			kdfParallelism: null
+			kdfParallelism: null,
+			kdfSettings: { kdfType: 0, iterations: 600_000, memory: null, parallelism: null },
+			salt: null
+		})
+	})
+
+	it("exposes the same KDF settings to browser and mobile prelogin clients", async () => {
+		const reg = await SELF.fetch("https://vault.test/identity/accounts/register", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				...TEST_USER,
+				kdf: 1,
+				kdfIterations: 3,
+				kdfMemory: 64,
+				kdfParallelism: 4
+			})
+		})
+		expect(reg.status).toBe(200)
+
+		for (const path of [
+			"/identity/accounts/prelogin",
+			"/identity/accounts/prelogin/password",
+			"/api/accounts/prelogin"
+		]) {
+			const res = await SELF.fetch(`https://vault.test${path}`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ email: TEST_USER.email })
+			})
+			expect(res.status).toBe(200)
+			expect(await res.json()).toEqual({
+				kdf: 1,
+				kdfIterations: 3,
+				kdfMemory: 64,
+				kdfParallelism: 4,
+				kdfSettings: { kdfType: 1, iterations: 3, memory: 64, parallelism: 4 },
+				salt: null
+			})
+		}
+
+		const loginRes = await login()
+		expect(loginRes.status).toBe(200)
+		const token = (await loginRes.json()) as Record<string, any>
+		expect(token.UserDecryptionOptions.MasterPasswordUnlock.Kdf).toEqual({
+			KdfType: 1,
+			Iterations: 3,
+			Memory: 64,
+			Parallelism: 4
+		})
+
+		const syncRes = await api(token.access_token, "GET", "/api/sync")
+		expect(syncRes.status).toBe(200)
+		const sync = (await syncRes.json()) as Record<string, any>
+		expect(sync.userDecryption.masterPasswordUnlock.kdf).toEqual({
+			kdfType: 1,
+			iterations: 3,
+			memory: 64,
+			parallelism: 4
 		})
 	})
 
@@ -41,6 +99,12 @@ describe("identity", () => {
 		})
 		const preBody = (await pre.json()) as Record<string, unknown>
 		expect(preBody.kdfIterations).toBe(600_000)
+		expect(preBody.kdfSettings).toEqual({
+			kdfType: 0,
+			iterations: 600_000,
+			memory: null,
+			parallelism: null
+		})
 
 		const res = await login()
 		expect(res.status).toBe(200)

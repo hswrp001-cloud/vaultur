@@ -13,6 +13,22 @@ export async function findUserByUuid(db: Db, userUuid: string): Promise<User | u
 	return db.query.users.findFirst({ where: eq(users.uuid, userUuid) })
 }
 
+/** Prelogin serves both the legacy mobile fields and the browser's KdfSettings model. */
+export function preloginResponse(user?: User) {
+	const kdf = user?.clientKdfType ?? KdfType.Pbkdf2
+	const iterations = user?.clientKdfIter ?? KDF_DEFAULTS.pbkdf2Iterations
+	const memory = user?.clientKdfMemory ?? null
+	const parallelism = user?.clientKdfParallelism ?? null
+	return {
+		kdf,
+		kdfIterations: iterations,
+		kdfMemory: memory,
+		kdfParallelism: parallelism,
+		kdfSettings: { kdfType: kdf, iterations, memory, parallelism },
+		salt: null
+	}
+}
+
 /** Blank user shell — vaultwarden User::new. Password is set separately. */
 export function newUserShell(email: string, name?: string | null): NewUser {
 	const now = nowDb()

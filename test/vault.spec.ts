@@ -132,6 +132,9 @@ describe("vault", () => {
 		expect(sync.profile.object).toBe("profile")
 		expect(sync.profile.email).toBe(TEST_USER.email)
 		expect(sync.profile.key).toBe(TEST_USER.key)
+		expect(sync.profile.accountKeys.publicKeyEncryptionKeyPair.wrappedPrivateKey).toBe(
+			TEST_USER.keys.encryptedPrivateKey
+		)
 		expect(sync.ciphers).toHaveLength(1)
 		expect(sync.ciphers[0].login).toBeTruthy()
 		// Clients 2026.7.0+ treat cipher.data as a string blob; object shape crashes WASM.
@@ -139,6 +142,8 @@ describe("vault", () => {
 		expect(sync.folders).toHaveLength(1)
 		expect(sync.collections).toEqual([])
 		expect(sync.policies).toEqual([])
+		expect(sync.policiesNew).toEqual([])
+		expect(sync.profile.organizationsNew).toEqual([])
 		expect(sync.sends).toEqual([])
 		expect(sync.domains.object).toBe("domains")
 		expect(sync.userDecryption.masterPasswordUnlock.salt).toBe(TEST_USER.email)
