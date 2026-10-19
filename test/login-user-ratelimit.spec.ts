@@ -1,9 +1,40 @@
 import { SELF } from "cloudflare:test"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
+import type { Config } from "../src/config"
+import { checkUserLoginFailureLimit, recordUserLoginFailure } from "../src/services/ratelimit"
 import { login, registerUser, TEST_USER } from "./helpers"
 
 describe("per-account failed-login rate limiting", () => {
+	it("keeps failures across fixed-minute boundaries", async () => {
+		const counters = new Map<string, string>()
+		const kv = {
+			get: async (key: string) => counters.get(key) ?? null,
+			put: async (key: string, value: string, options: { expirationTtl: number }) => {
+				expect(options.expirationTtl).toBe(60)
+				counters.set(key, value)
+			}
+		} as unknown as KVNamespace
+		const config = { loginRatelimitUserMaxFailures: 5 } as Config
+		const now = vi.spyOn(Date, "now")
+
+		try {
+			now.mockReturnValue(59_000)
+			for (let i = 0; i < 4; i++) {
+				await recordUserLoginFailure(kv, TEST_USER.email)
+			}
+			now.mockReturnValue(60_000)
+			await recordUserLoginFailure(kv, TEST_USER.email)
+
+			await expect(checkUserLoginFailureLimit(kv, config, TEST_USER.email)).rejects.toMatchObject({
+				status: 429
+			})
+			expect([...counters.entries()]).toEqual([[`ratelimit:login-user:${TEST_USER.email}`, "5"]])
+		} finally {
+			now.mockRestore()
+		}
+	})
+
 	it("locks an account after five failed password logins", async () => {
 		expect((await registerUser()).status).toBe(200)
 		for (let i = 0; i < 5; i++) {
