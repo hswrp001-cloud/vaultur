@@ -42,6 +42,10 @@ pnpm db:migrate:local && pnpm dev  # http://localhost:8787
 
 ## Before opening a PR
 
+Fork the repository, make your change on a branch in your fork, and open a PR
+against `nommyt/vaultur:main`. External contributors do not need collaborator
+access. The maintainer reviews and merges PRs after the required checks pass.
+
 ```bash
 pnpm format:check
 pnpm typecheck
