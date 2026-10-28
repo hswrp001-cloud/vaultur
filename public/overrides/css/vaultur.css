@@ -10,3 +10,43 @@ bit-form-field:has(input.vw-email-sso):not(:has(input.vw-email-continue)) {
 input.vw-email-sso {
 	display: none;
 }
+
+
+/* The Storm SMP Vault brand: storm-red accents with a midnight base. */
+:root {
+  --color-primary-500: #e3263a;
+  --color-primary-600: #c8172c;
+  --color-primary-700: #a80f25;
+  --color-primary-100: #ffe5e8;
+  --color-primary-200: #ffbdc5;
+  --color-primary-300: #ff8b99;
+  --color-primary-400: #f45a6d;
+}
+
+a,
+.link {
+  color: #e3263a;
+}
+
+a:hover,
+.link:hover {
+  color: #ff6677;
+}
+
+.btn-primary,
+button.btn-primary,
+button[type="submit"] {
+  background-color: #c8172c;
+  border-color: #c8172c;
+}
+
+.btn-primary:hover,
+button.btn-primary:hover,
+button[type="submit"]:hover {
+  background-color: #a80f25;
+  border-color: #a80f25;
+}
+
+:focus-visible {
+  outline-color: #ff5757;
+}
